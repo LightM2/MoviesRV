@@ -2,7 +2,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
   <data>
-    <variable name="viewModel" type="com.example.project.Filters"/>
+    <variable name="viewModel"
+        type="com.example.project.Filters"/>
   </data>
 
   <LinearLayout
@@ -12,7 +13,7 @@
 
     <androidx.appcompat.widget.AppCompatCheckBox android:layout_width="wrap_content"
         android:id="@+id/checkBoxRV"
-        android:checked="@{viewModel.filterState}"
+        android:checked="@{viewModel.state.get()}"
         android:layout_height="wrap_content"/>
 
     <androidx.appcompat.widget.AppCompatTextView android:layout_width="match_parent"

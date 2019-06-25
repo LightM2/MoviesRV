@@ -138,7 +138,9 @@ class FiltersAdapter(
     fun bind(position: Int, filter: Filters){
 
       itemView.textViewRV.text = filter.filtersName[position]
-      binding.setVariable(BR.filterState, filter.filtersState[position])
+      //binding.setVariable(BR.filterState, true)
+      //filter.filterState = true
+
       itemView.checkBoxRV.isChecked = filter.filtersState[position]
       itemView.checkBoxRV.setOnClickListener {
         filter.newFilterState(position, !filter.filtersState[position])

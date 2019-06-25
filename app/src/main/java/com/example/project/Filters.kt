@@ -1,6 +1,7 @@
 package com.example.project
 
 import androidx.databinding.Bindable
+import androidx.databinding.ObservableBoolean
 
 class Filters: BaseViewModel() {
   var filtersName: List<String> = listOf()
@@ -19,9 +20,11 @@ class Filters: BaseViewModel() {
     set(value) {
       if (field != value) {
         field = value
-        //notifyPropertyChanged(BR.filterState)
+        notifyPropertyChanged(BR.filterState)
       }
     }
+
+  var state:ObservableBoolean = ObservableBoolean()
 
   private fun setFalseFiltersState(){
     for (i in 0 until filtersName.size){
