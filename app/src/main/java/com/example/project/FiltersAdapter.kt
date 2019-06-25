@@ -1,25 +1,20 @@
 package com.example.project
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.TextView
-import androidx.databinding.Bindable
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.ObservableBoolean
 import androidx.databinding.ViewDataBinding
-import androidx.databinding.library.baseAdapters.BR
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.list_view.view.checkBoxRV
 import kotlinx.android.synthetic.main.list_view.view.textViewRV
 import kotlinx.android.synthetic.main.title_view.view.titleViewRV
 
 class FiltersAdapter(
-  private var moviesFiltersYears: Filters,
-  private var moviesFiltersGenres: Filters,
-  private var moviesFiltersDirectors: Filters
+  private var moviesFiltersYears: List<FilterItem>,
+  private var moviesFiltersGenres: List<FilterItem>,
+  private var moviesFiltersDirectors: List<FilterItem>
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
@@ -38,18 +33,18 @@ class FiltersAdapter(
         val inflater = LayoutInflater.from(parent.context)
         val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater,R.layout.list_view, parent, false)
 
-        return ViewHolde(binding)
+        return ViewHolder(binding)
       }
     }
   }
 
   override fun getItemCount(): Int {
-    return moviesFiltersYears.size() + moviesFiltersGenres.size() + moviesFiltersDirectors.size() + 3
+    return moviesFiltersYears.size + moviesFiltersGenres.size + moviesFiltersDirectors.size + 3
   }
 
   override fun getItemViewType(position: Int): Int {
     return when (position) {
-      0, moviesFiltersYears.size()+1, moviesFiltersYears.size() + moviesFiltersGenres.size()+2 -> 0
+      0, moviesFiltersYears.size + 1, moviesFiltersYears.size + moviesFiltersGenres.size + 2 -> 0
       else -> 1
     }
   }
@@ -60,8 +55,8 @@ class FiltersAdapter(
         if (getItemViewType(position) == 0) {
           holder.bind(when (position) {
             0 -> "Year"
-            moviesFiltersYears.size()+1 -> "Genres"
-            moviesFiltersYears.size() + moviesFiltersGenres.size()+2 -> "Directors"
+            moviesFiltersYears.size + 1 -> "Genres"
+            moviesFiltersYears.size + moviesFiltersGenres.size + 2 -> "Directors"
             else -> ""
           })
         }
@@ -69,63 +64,26 @@ class FiltersAdapter(
       is ViewHolder -> {
         val positionRV: Int
         when {
-          position <= moviesFiltersYears.size() -> {
+          position <= moviesFiltersYears.size -> {
             positionRV = position-1
-            holder.bind(positionRV,moviesFiltersYears)
+            holder.bind(moviesFiltersYears[positionRV])
+            if (moviesFiltersYears[positionRV].title == "All" && moviesFiltersYears[positionRV].state) {
+              allFilterState(moviesFiltersYears)
+            }
           }
-          position <= moviesFiltersYears.size() + moviesFiltersGenres.size()+1 -> {
-            positionRV = position - moviesFiltersYears.size() -2
-            holder.bind(positionRV,moviesFiltersGenres)
+          position <= moviesFiltersYears.size + moviesFiltersGenres.size + 1 -> {
+            positionRV = position - moviesFiltersYears.size - 2
+            holder.bind(moviesFiltersGenres[positionRV])
           }
           else -> {
-            positionRV = position - moviesFiltersYears.size() - moviesFiltersGenres.size()-3
-            holder.bind(positionRV,moviesFiltersDirectors)
-          }
-        }
-      }
-      is ViewHolde ->{
-        val positionRV: Int
-        when {
-          position <= moviesFiltersYears.size() -> {
-            positionRV = position-1
-            holder.bind(positionRV,moviesFiltersYears)
-          }
-          position <= moviesFiltersYears.size() + moviesFiltersGenres.size()+1 -> {
-            positionRV = position - moviesFiltersYears.size() -2
-            holder.bind(positionRV,moviesFiltersGenres)
-          }
-          else -> {
-            positionRV = position - moviesFiltersYears.size() - moviesFiltersGenres.size()-3
-            holder.bind(positionRV,moviesFiltersDirectors)
+            positionRV = position - moviesFiltersYears.size - moviesFiltersGenres.size - 3
+            holder.bind(moviesFiltersDirectors[positionRV])
           }
         }
       }
     }
   }
 
-  class ViewHolder(itemLayoutView: View) : RecyclerView.ViewHolder(itemLayoutView){
-    private var filtersButton: CheckBox = itemLayoutView.checkBoxRV
-    private var filtersText: TextView = itemLayoutView.textViewRV
-
-    fun bind(position: Int, filter: Filters){
-      filtersText.text = filter.filtersName[position]
-      filtersButton.isChecked = filter.filtersState[position]
-      filtersButton.setOnClickListener {
-        filter.newFilterState(position, !filter.filtersState[position])
-        /*filter.checkAllFiltersOneState()
-        if (filter.filtersName[position]=="All"){
-          if (filter.filtersState[position]){
-            filter.allFilterState(true)
-          }
-        }*/
-
-        Log.d("Movies", "${filter.filtersState[position]}")
-      }
-
-
-    }
-
-  }
 
   class TitleViewHolder(itemLayoutView: View) : RecyclerView.ViewHolder(itemLayoutView) {
     private var filtersTitle: TextView = itemLayoutView.titleViewRV
@@ -134,33 +92,43 @@ class FiltersAdapter(
     }
   }
 
-  inner class ViewHolde(private val binding: ViewDataBinding) :RecyclerView.ViewHolder(binding.root){
-    fun bind(position: Int, filter: Filters){
+  inner class ViewHolder(private val binding: ViewDataBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+    fun bind(filterItem: FilterItem) {
 
-      itemView.textViewRV.text = filter.filtersName[position]
-      //binding.setVariable(BR.filterState, true)
-      //filter.filterState = true
+      itemView.textViewRV.text = filterItem.title
 
-      itemView.checkBoxRV.isChecked = filter.filtersState[position]
+      itemView.checkBoxRV.isChecked = filterItem.state
+
+
       itemView.checkBoxRV.setOnClickListener {
-        filter.newFilterState(position, !filter.filtersState[position])
-        filter.checkAllFiltersOneState()
-        if (filter.filtersName[position]=="All"){
-          if (filter.filtersState[position]){
-            filter.allFilterState(true)
+        filterItem.state = !filterItem.state
+        /*moviesFiltersYears[position].state = filterItem.state
+        if (filterItem.title=="All"){
+          if (filterItem.state){
+            for (i in 1 until moviesFiltersYears.size){
+              moviesFiltersYears[i].state = true
+            }
           }
-        }
-        if (filter.filtersState[0] and !filter.filtersState[position]){
-          filter.filtersState[0] = false
-        }
-        Log.d("Movies", "${filter.filtersState[position]}")
+          if (filter.filtersState[0] and !filter.filtersState[position]){
+              filter.filtersState[0] = false
+            }
+            Log.d("Movies", "${filter.filtersState[position]}")
+        }*/
+
       }
 
-      binding.setVariable(BR.filterName, filter.filtersName[position])
+
       binding.executePendingBindings()
     }
+
   }
 
+  fun allFilterState(list: List<FilterItem>) {
+    for (i in 0 until list.size) {
+      list[i].state = true
+    }
+  }
 
 
 

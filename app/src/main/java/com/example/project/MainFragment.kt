@@ -27,12 +27,26 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     super.onViewCreated(view, savedInstanceState)
     main_recycler_view.apply {
       layoutManager = LinearLayoutManager(activity)
-      val yearFilters = Filters()
-      yearFilters.addElements(moviesFiltersYears)
-      val genreFilters = Filters()
-      genreFilters.addElements(moviesFiltersGenres)
-      val directorFilters = Filters()
-      directorFilters.addElements(moviesFiltersDirectors)
+      val yearFilters = mutableListOf<FilterItem>()
+      for (i in 0 until moviesFiltersYears.size) {
+        yearFilters.add(FilterItem())
+        yearFilters[i].state = false
+        yearFilters[i].title = moviesFiltersYears[i]
+      }
+
+      val genreFilters = mutableListOf<FilterItem>()
+      for (i in 0 until moviesFiltersGenres.size) {
+        genreFilters.add(FilterItem())
+        genreFilters[i].state = false
+        genreFilters[i].title = moviesFiltersGenres[i]
+      }
+
+      val directorFilters = mutableListOf<FilterItem>()
+      for (i in 0 until moviesFiltersDirectors.size) {
+        directorFilters.add(FilterItem())
+        directorFilters[i].state = false
+        directorFilters[i].title = moviesFiltersDirectors[i]
+      }
 
       adapter = FiltersAdapter(yearFilters, genreFilters, directorFilters)
     }

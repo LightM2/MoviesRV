@@ -1,30 +1,21 @@
 package com.example.project
 
-import androidx.databinding.Bindable
 import androidx.databinding.ObservableBoolean
 
-class Filters: BaseViewModel() {
+class Filters {
   var filtersName: List<String> = listOf()
 
   var filtersState: MutableList<Boolean> = mutableListOf()
 
-  @get:Bindable var filterName: String = ""
-    set(value) {
-      if (field != value) {
-        field = value
-        notifyPropertyChanged(BR.filterName)
-      }
-    }
-
-  @get:Bindable var filterState: Boolean = false
+/*  @get:Bindable var filterState: Boolean = true
     set(value) {
       if (field != value) {
         field = value
         notifyPropertyChanged(BR.filterState)
       }
-    }
+    }*/
 
-  var state:ObservableBoolean = ObservableBoolean()
+  var state: ObservableBoolean = ObservableBoolean(true)
 
   private fun setFalseFiltersState(){
     for (i in 0 until filtersName.size){
