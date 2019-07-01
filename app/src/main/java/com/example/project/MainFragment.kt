@@ -1,12 +1,17 @@
 package com.example.project
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project.databinding.MainFragmentBinding
 import kotlinx.android.synthetic.main.main_fragment.main_recycler_view
+import kotlinx.android.synthetic.main.main_fragment.main_toolbar
 
 class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
   override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
@@ -18,46 +23,90 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     retainInstance = true
   }
 
-  override fun onCreateView(inflater: LayoutInflater,
+  override fun onCreateView(
+    inflater: LayoutInflater,
     container: ViewGroup?,
-    savedInstanceState: Bundle?): View? =
-    inflater.inflate(R.layout.main_fragment, container, false)
+    savedInstanceState: Bundle?
+  ): View? {
+    retainInstance = true
+
+    return inflater.inflate(R.layout.main_fragment, container, false)
+  }
+
+  private var yearFilters = Filters()
+
+  override fun onActivityCreated(savedInstanceState: Bundle?) {
+    super.onActivityCreated(savedInstanceState)
+    retainInstance = true
+
+    /*if (savedInstanceState != null) {
+      yearFilters = savedInstanceState.getSerializable("Years") as Filters
+    } else {
+      yearFilters = Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(moviesFiltersYears[i]) })
+    }*/
+
+  }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    main_toolbar.inflateMenu(R.menu.main_fragment_menu)
+
+    val genreFilters =
+      Filters(moviesFiltersGenres.mapIndexed { i, _ -> FilterItem(moviesFiltersGenres[i]) })
+
+    val directorFilters =
+      Filters(moviesFiltersDirectors.mapIndexed { i, _ -> FilterItem(moviesFiltersDirectors[i]) })
+
+    if (savedInstanceState == null) {
+      yearFilters =
+        Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(moviesFiltersYears[i]) })
+
+      /*genreFilters = Filters(moviesFiltersGenres.mapIndexed{i, _ -> FilterItem(moviesFiltersGenres[i])})
+      directorFilters = Filters(moviesFiltersDirectors.mapIndexed{i, _ -> FilterItem(moviesFiltersDirectors[i])})*/
+
+    } else {
+      yearFilters = savedInstanceState.getSerializable("Years") as Filters
+    }
+
     main_recycler_view.apply {
       layoutManager = LinearLayoutManager(activity)
-      val yearFilters = mutableListOf<FilterItem>()
-      for (i in 0 until moviesFiltersYears.size) {
-        yearFilters.add(FilterItem())
-        yearFilters[i].state = false
-        yearFilters[i].title = moviesFiltersYears[i]
-      }
-
-      val genreFilters = mutableListOf<FilterItem>()
-      for (i in 0 until moviesFiltersGenres.size) {
-        genreFilters.add(FilterItem())
-        genreFilters[i].state = false
-        genreFilters[i].title = moviesFiltersGenres[i]
-      }
-
-      val directorFilters = mutableListOf<FilterItem>()
-      for (i in 0 until moviesFiltersDirectors.size) {
-        directorFilters.add(FilterItem())
-        directorFilters[i].state = false
-        directorFilters[i].title = moviesFiltersDirectors[i]
-      }
 
       adapter = FiltersAdapter(yearFilters, genreFilters, directorFilters)
     }
 
+    main_toolbar.setOnMenuItemClickListener {
+      Log.d("Filters", "title")
+      var year = "Years "
+      yearFilters.filtersList.forEach {
+        if (it.state) {
+          year += it.title + " "
+          Log.d("Filters", it.title)
+        }
+      }
+
+      Toast.makeText(context, year, Toast.LENGTH_LONG).show()
+
+      true
+
+    }
+
   }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.putSerializable("Years", yearFilters)
+  }
+
   companion object {
     fun newInstance() = MainFragment()
   }
 
+  override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    inflater?.inflate(R.menu.main_fragment_menu, menu)
+    super.onCreateOptionsMenu(menu, inflater)
+  }
+
   private val moviesFiltersYears = listOf(
-    "All",
     "1954",
     "1957",
     "1972",
@@ -75,8 +124,8 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     "2008",
     "2014"
   )
+
   private val moviesFiltersGenres = listOf(
-    "All",
     "Action",
     "Adventure",
     "Biography",
@@ -90,7 +139,6 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     "War"
   )
   private val moviesFiltersDirectors = listOf(
-    "All",
     "Akira Kurosawa",
     "Christopher Nolan",
     "David Fincher",
@@ -106,6 +154,5 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     "Sidney Lumet",
     "Steven Spielberg"
   )
-
 
 }

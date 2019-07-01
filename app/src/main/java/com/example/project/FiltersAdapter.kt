@@ -7,14 +7,12 @@ import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.list_view.view.checkBoxRV
-import kotlinx.android.synthetic.main.list_view.view.textViewRV
 import kotlinx.android.synthetic.main.title_view.view.titleViewRV
 
 class FiltersAdapter(
-  private var moviesFiltersYears: List<FilterItem>,
-  private var moviesFiltersGenres: List<FilterItem>,
-  private var moviesFiltersDirectors: List<FilterItem>
+  private var moviesFiltersYears: Filters,
+  private var moviesFiltersGenres: Filters,
+  private var moviesFiltersDirectors: Filters
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
@@ -39,51 +37,62 @@ class FiltersAdapter(
   }
 
   override fun getItemCount(): Int {
-    return moviesFiltersYears.size + moviesFiltersGenres.size + moviesFiltersDirectors.size + 3
+    return moviesFiltersYears.filtersList.size + moviesFiltersGenres.filtersList.size + moviesFiltersDirectors.filtersList.size + 6//+3
   }
 
   override fun getItemViewType(position: Int): Int {
     return when (position) {
-      0, moviesFiltersYears.size + 1, moviesFiltersYears.size + moviesFiltersGenres.size + 2 -> 0
+      0, moviesFiltersYears.filtersList.size + 2, moviesFiltersYears.filtersList.size + moviesFiltersGenres.filtersList.size + 4 -> 0//0, +1, +2
       else -> 1
     }
   }
 
   override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+
     when (holder) {
+
       is TitleViewHolder -> {
         if (getItemViewType(position) == 0) {
           holder.bind(when (position) {
             0 -> "Year"
-            moviesFiltersYears.size + 1 -> "Genres"
-            moviesFiltersYears.size + moviesFiltersGenres.size + 2 -> "Directors"
+            moviesFiltersYears.filtersList.size + 2 -> "Genres"//+1
+            moviesFiltersYears.filtersList.size + moviesFiltersGenres.filtersList.size + 4 -> "Directors"//+2
             else -> ""
           })
         }
       }
+
       is ViewHolder -> {
         val positionRV: Int
+
         when {
-          position <= moviesFiltersYears.size -> {
-            positionRV = position-1
-            holder.bind(moviesFiltersYears[positionRV])
-            if (moviesFiltersYears[positionRV].title == "All" && moviesFiltersYears[positionRV].state) {
-              allFilterState(moviesFiltersYears)
+          position <= moviesFiltersYears.filtersList.size + 1 -> {//+1
+            positionRV = position - 2
+            if (positionRV == -1) {
+              holder.bind(moviesFiltersYears)
+            } else {
+              holder.bind(moviesFiltersYears.filtersList[positionRV])
             }
           }
-          position <= moviesFiltersYears.size + moviesFiltersGenres.size + 1 -> {
-            positionRV = position - moviesFiltersYears.size - 2
-            holder.bind(moviesFiltersGenres[positionRV])
+
+          position <= moviesFiltersYears.filtersList.size + moviesFiltersGenres.filtersList.size + 3 -> {//+2
+            positionRV = position - moviesFiltersYears.filtersList.size - 4
+            if (positionRV == -1) {
+              holder.bind(moviesFiltersGenres)
+            } else holder.bind(moviesFiltersGenres.filtersList[positionRV])
           }
+
           else -> {
-            positionRV = position - moviesFiltersYears.size - moviesFiltersGenres.size - 3
-            holder.bind(moviesFiltersDirectors[positionRV])
+            positionRV =
+              position - moviesFiltersYears.filtersList.size - moviesFiltersGenres.filtersList.size - 6
+            if (positionRV == -1) {
+              holder.bind(moviesFiltersDirectors)
+            } else holder.bind(moviesFiltersDirectors.filtersList[positionRV])
           }
         }
       }
     }
   }
-
 
   class TitleViewHolder(itemLayoutView: View) : RecyclerView.ViewHolder(itemLayoutView) {
     private var filtersTitle: TextView = itemLayoutView.titleViewRV
@@ -92,44 +101,18 @@ class FiltersAdapter(
     }
   }
 
-  inner class ViewHolder(private val binding: ViewDataBinding) :
+  class ViewHolder(private val binding: ViewDataBinding) :
     RecyclerView.ViewHolder(binding.root) {
+
     fun bind(filterItem: FilterItem) {
-
-      itemView.textViewRV.text = filterItem.title
-
-      itemView.checkBoxRV.isChecked = filterItem.state
-
-
-      itemView.checkBoxRV.setOnClickListener {
-        filterItem.state = !filterItem.state
-        /*moviesFiltersYears[position].state = filterItem.state
-        if (filterItem.title=="All"){
-          if (filterItem.state){
-            for (i in 1 until moviesFiltersYears.size){
-              moviesFiltersYears[i].state = true
-            }
-          }
-          if (filter.filtersState[0] and !filter.filtersState[position]){
-              filter.filtersState[0] = false
-            }
-            Log.d("Movies", "${filter.filtersState[position]}")
-        }*/
-
-      }
-
-
+      binding.setVariable(BR.item, filterItem)
+      /*if (filterItem.title == "All" && filterItem.state){
+        moviesFiltersYears.allFilterStateTrue()
+      }*/
       binding.executePendingBindings()
     }
 
   }
-
-  fun allFilterState(list: List<FilterItem>) {
-    for (i in 0 until list.size) {
-      list[i].state = true
-    }
-  }
-
 
 
 }

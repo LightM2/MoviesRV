@@ -18,6 +18,7 @@
           android:theme="@style/ToolBarTheme"
           android:layout_height="?attr/actionBarSize"
           android:id="@+id/main_toolbar"
+          android:clickable="false"
           app:title="@string/toolBarTitle">
 
       </androidx.appcompat.widget.Toolbar>

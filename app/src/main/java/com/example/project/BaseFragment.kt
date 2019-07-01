@@ -40,4 +40,5 @@ abstract class BaseFragment<T : ViewDataBinding, V : BaseViewModel> : Fragment()
     super.onDestroy()
     viewModel.fragment = null
   }
+
 }

@@ -1,5 +1,10 @@
 package com.example.project
 
+import android.util.Log
+
 class MainViewModel : BaseViewModel() {
-  // TODO: Implement the ViewModel
+
+  fun onClick() {
+    Log.d("Filter", "click")
+  }
 }

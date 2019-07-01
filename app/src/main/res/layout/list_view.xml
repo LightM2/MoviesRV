@@ -13,11 +13,12 @@
 
     <androidx.appcompat.widget.AppCompatCheckBox android:layout_width="wrap_content"
         android:id="@+id/checkBoxRV"
-        android:checked="@{item.state}"
+        android:checked="@={item.state}"
         android:layout_height="wrap_content"/>
 
     <androidx.appcompat.widget.AppCompatTextView android:layout_width="match_parent"
         android:id="@+id/textViewRV"
+        android:text="@{item.title}"
         android:layout_height="wrap_content"/>
 
   </LinearLayout>

@@ -29,6 +29,12 @@ android {
     jcenter()
     google()
   }
+  allprojects {
+    repositories {
+      google()
+      jcenter()
+    }
+  }
 }
 
 dependencies {
@@ -41,7 +47,7 @@ dependencies {
   implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
   implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0'
   implementation 'androidx.recyclerview:recyclerview:1.0.0'
-  implementation 'com.google.android.material:material:1.1.0-alpha07'
+  implementation 'com.google.android.material:material:1.0.0'
   testImplementation 'junit:junit:4.12'
   androidTestImplementation 'com.android.support.test:runner:1.0.2'
   androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

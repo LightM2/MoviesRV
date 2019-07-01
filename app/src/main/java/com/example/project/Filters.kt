@@ -1,59 +1,36 @@
 package com.example.project
 
-import androidx.databinding.ObservableBoolean
+import android.util.Log
+import androidx.databinding.Bindable
+import java.io.Serializable
 
-class Filters {
-  var filtersName: List<String> = listOf()
+class Filters(val filtersList: List<FilterItem> = mutableListOf()) : FilterItem("All"),
+  Serializable {
 
-  var filtersState: MutableList<Boolean> = mutableListOf()
+  init {
+    filtersList.forEach { filter ->
+      filter.filter = this
+    }
+  }
 
-/*  @get:Bindable var filterState: Boolean = true
+  @get:Bindable override var state: Boolean = false
     set(value) {
       if (field != value) {
         field = value
-        notifyPropertyChanged(BR.filterState)
-      }
-    }*/
-
-  var state: ObservableBoolean = ObservableBoolean(true)
-
-  private fun setFalseFiltersState(){
-    for (i in 0 until filtersName.size){
-      filtersState.add(false)
-    }
-  }
-
-  fun addElements(names: List<String>){
-    filtersName = names
-    setFalseFiltersState()
-  }
-
-  fun newFilterState(position: Int, state: Boolean){
-    if (position< filtersState.size){
-      filtersState[position] = state
-    }
-
-  }
-
-  fun size(): Int {
-    return filtersName.size
-  }
-
-  fun allFilterState(state: Boolean){
-    for (i in 0 until filtersState.size){
-      filtersState[i] = state
-    }
-  }
-
-  fun checkAllFiltersOneState(){
-    var number = 0
-    for (i in 1 until filtersState.size){
-      if (filtersState[i]){
-        number += 1
+        if (field) {
+          allFilterStateTrue()
+        }
+        Log.d("state", "$title $value")
+        notifyPropertyChanged(BR.state)
       }
     }
-    if (number==(filtersState.size-1)){
-      filtersState[0]=true
+
+  private fun allFilterStateTrue() {
+    filtersList.forEachIndexed { _, filterItem ->
+      filterItem.state = true
     }
   }
+
+
+
 }
