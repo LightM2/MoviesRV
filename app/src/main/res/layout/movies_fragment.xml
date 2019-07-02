@@ -2,10 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <data>
-    <variable name="viewModel" type="com.example.project.MainViewModel"/>
-  </data>
-
   <LinearLayout android:layout_width="match_parent"
       android:orientation="vertical"
       android:layout_height="match_parent">
@@ -17,9 +13,8 @@
       <androidx.appcompat.widget.Toolbar android:layout_width="match_parent"
           android:theme="@style/ToolBarTheme"
           android:layout_height="?attr/actionBarSize"
-          android:id="@+id/main_toolbar"
+          android:id="@+id/movies_toolbar"
           android:clickable="false"
-          android:paddingRight="10dp"
           app:title="@string/toolBarTitle">
 
       </androidx.appcompat.widget.Toolbar>
@@ -27,9 +22,8 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/main_recycler_view"
+        android:id="@+id/movies_recycler_view"
         android:layout_width="match_parent"
-        android:paddingLeft="5dp"
         android:layout_height="wrap_content">
 
     </androidx.recyclerview.widget.RecyclerView>

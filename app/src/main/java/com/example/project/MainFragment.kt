@@ -34,38 +34,26 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
   }
 
   private var yearFilters = Filters()
-
-  override fun onActivityCreated(savedInstanceState: Bundle?) {
-    super.onActivityCreated(savedInstanceState)
-    retainInstance = true
-
-    /*if (savedInstanceState != null) {
-      yearFilters = savedInstanceState.getSerializable("Years") as Filters
-    } else {
-      yearFilters = Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(moviesFiltersYears[i]) })
-    }*/
-
-  }
+  private var genreFilters = Filters()
+  private var directorFilters = Filters()
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     main_toolbar.inflateMenu(R.menu.main_fragment_menu)
 
-    val genreFilters =
-      Filters(moviesFiltersGenres.mapIndexed { i, _ -> FilterItem(moviesFiltersGenres[i]) })
-
-    val directorFilters =
-      Filters(moviesFiltersDirectors.mapIndexed { i, _ -> FilterItem(moviesFiltersDirectors[i]) })
-
     if (savedInstanceState == null) {
       yearFilters =
         Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(moviesFiltersYears[i]) })
-
-      /*genreFilters = Filters(moviesFiltersGenres.mapIndexed{i, _ -> FilterItem(moviesFiltersGenres[i])})
-      directorFilters = Filters(moviesFiltersDirectors.mapIndexed{i, _ -> FilterItem(moviesFiltersDirectors[i])})*/
+      genreFilters =
+        Filters(moviesFiltersGenres.mapIndexed { i, _ -> FilterItem(moviesFiltersGenres[i]) })
+      directorFilters =
+        Filters(moviesFiltersDirectors.mapIndexed { i, _ -> FilterItem(moviesFiltersDirectors[i]) })
 
     } else {
-      yearFilters = savedInstanceState.getSerializable("Years") as Filters
+      yearFilters = savedInstanceState.getSerializable("Year") as Filters
+      genreFilters = savedInstanceState.getSerializable("Genre") as Filters
+      directorFilters = savedInstanceState.getSerializable("Director") as Filters
+
     }
 
     main_recycler_view.apply {
@@ -76,15 +64,11 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
 
     main_toolbar.setOnMenuItemClickListener {
       Log.d("Filters", "title")
-      var year = "Years "
-      yearFilters.filtersList.forEach {
-        if (it.state) {
-          year += it.title + " "
-          Log.d("Filters", it.title)
-        }
-      }
+      val toast = filtersToast(yearFilters, "Years") +
+          "\n${filtersToast(genreFilters, "Genres")}" +
+          "\n${filtersToast(directorFilters, "Directors")}"
 
-      Toast.makeText(context, year, Toast.LENGTH_LONG).show()
+      Toast.makeText(context, toast, Toast.LENGTH_LONG).show()
 
       true
 
@@ -92,9 +76,38 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
 
   }
 
+  private fun filtersToast(filters: Filters): String {
+    var trueFilters = ""
+
+    filters.filtersList.forEach {
+      if (it.state) {
+        trueFilters += it.title + " "
+        Log.d("Filters", it.title)
+      }
+    }
+    return trueFilters
+  }
+
+  private fun filtersToast(filters: Filters, state: String): String {
+    var trueFilters = ""
+
+    filters.filtersList.forEach {
+      if (it.state) {
+        trueFilters += it.title + " "
+        Log.d("Filters", it.title)
+      }
+    }
+
+    return if (trueFilters.isNotEmpty()) {
+      "$state: $trueFilters"
+    } else trueFilters
+  }
+
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
-    outState.putSerializable("Years", yearFilters)
+    outState.putSerializable("Year", yearFilters)
+    outState.putSerializable("Genre", genreFilters)
+    outState.putSerializable("Director", directorFilters)
   }
 
   companion object {
