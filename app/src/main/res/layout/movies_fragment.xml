@@ -2,13 +2,15 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <LinearLayout android:layout_width="match_parent"
-      android:orientation="vertical"
+  <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
       android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout android:layout_width="match_parent"
         android:id="@+id/appbar"
-        android:layout_height="wrap_content">
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
       <androidx.appcompat.widget.Toolbar android:layout_width="match_parent"
           android:theme="@style/ToolBarTheme"
@@ -23,11 +25,23 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/movies_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/appbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-  </LinearLayout>
+    <ProgressBar android:layout_width="wrap_content"
+        android:id="@+id/moviesPB"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@+id/movies_recycler_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
