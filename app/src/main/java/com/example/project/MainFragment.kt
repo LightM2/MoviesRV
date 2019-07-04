@@ -2,12 +2,11 @@ package com.example.project
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project.databinding.MainFragmentBinding
 import kotlinx.android.synthetic.main.main_fragment.main_recycler_view
@@ -23,17 +22,9 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     retainInstance = true
   }
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    retainInstance = true
-
-    return inflater.inflate(R.layout.main_fragment, container, false)
-  }
 
   private var yearFilters = Filters()
+  private var movies = Movie()
   private var genreFilters = Filters()
   private var directorFilters = Filters()
 
@@ -41,9 +32,15 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     super.onViewCreated(view, savedInstanceState)
     main_toolbar.inflateMenu(R.menu.main_fragment_menu)
 
+
+
     if (savedInstanceState == null) {
-      yearFilters =
-        Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(moviesFiltersYears[i]) })
+
+      movies.list.observe(this, Observer {
+        yearFilters =
+          Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(it[i].year.toString()) })
+      })
+
       genreFilters =
         Filters(moviesFiltersGenres.mapIndexed { i, _ -> FilterItem(moviesFiltersGenres[i]) })
       directorFilters =

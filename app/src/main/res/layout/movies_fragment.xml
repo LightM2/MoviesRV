@@ -2,6 +2,10 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+  <data>
+    <variable name="viewModel" type="com.example.project.Movie"/>
+  </data>
+
   <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
       android:layout_height="match_parent">
 
@@ -16,7 +20,6 @@
           android:theme="@style/ToolBarTheme"
           android:layout_height="?attr/actionBarSize"
           android:id="@+id/movies_toolbar"
-          android:clickable="false"
           app:title="@string/toolBarTitle">
 
       </androidx.appcompat.widget.Toolbar>
@@ -24,7 +27,7 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/movies_recycler_view"
+        android:id="@+id/moviesRV"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@+id/appbar"
@@ -37,7 +40,7 @@
     <ProgressBar android:layout_width="wrap_content"
         android:id="@+id/moviesPB"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@+id/movies_recycler_view"
+        app:layout_constraintTop_toTopOf="@+id/moviesRV"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.movies_list_rv.view.movieSummaryTV
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieTitleTV
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieYearTV
 
-class MovieListAdapter(private var dataList: List<Value>) :
+class MovieListAdapter(private var dataList: Movie) :
   RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -24,21 +24,23 @@ class MovieListAdapter(private var dataList: List<Value>) :
   }
 
   override fun getItemCount(): Int {
-    return dataList.size
+    return dataList.movieList.size
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-    val data = dataList[position]
+    val data = dataList.list.value?.get(position)
 
-    holder.bind(
-      data.title,
-      data.year,
-      data.director,
-      data.genre,
-      data.desription,
-      data.image
-    )
+    if (data != null) {
+      holder.bind(
+        data.title,
+        data.year,
+        data.director,
+        data.genre,
+        data.desription,
+        data.image
+      )
+    }
 
   }
 
@@ -64,7 +66,7 @@ class MovieListAdapter(private var dataList: List<Value>) :
       movieSummary.text = summary
       var genre = ""
       genreList.forEach {
-        genre += it
+        genre += "$it "
       }
       movieGenre.text = genre
       Picasso.get().load(poster).into(moviePoster)

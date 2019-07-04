@@ -14,12 +14,13 @@
         android:id="@+id/appbar"
         android:layout_height="wrap_content">
 
-      <androidx.appcompat.widget.Toolbar android:layout_width="match_parent"
+      <androidx.appcompat.widget.Toolbar
+          android:layout_width="match_parent"
           android:theme="@style/ToolBarTheme"
           android:layout_height="?attr/actionBarSize"
           android:id="@+id/main_toolbar"
-          android:clickable="false"
-          android:paddingRight="10dp"
+          app:navigationIcon="@drawable/ic_arrow_back_green_24dp"
+          navigationListener="@{() -> viewModel.onClick()}"
           app:title="@string/toolBarTitle">
 
       </androidx.appcompat.widget.Toolbar>
@@ -29,7 +30,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_recycler_view"
         android:layout_width="match_parent"
-        android:paddingLeft="5dp"
+        android:layout_marginLeft="5dp"
         android:layout_height="wrap_content">
 
     </androidx.recyclerview.widget.RecyclerView>
