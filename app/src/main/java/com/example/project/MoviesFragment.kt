@@ -8,14 +8,13 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.project.databinding.MainFragmentBinding
+import com.example.project.databinding.MoviesFragmentBinding
 import kotlinx.android.synthetic.main.movies_fragment.moviesPB
 import kotlinx.android.synthetic.main.movies_fragment.moviesRV
 import kotlinx.android.synthetic.main.movies_fragment.movies_toolbar
+import org.greenrobot.eventbus.EventBus
 
-class MoviesFragment : BaseFragment<MainFragmentBinding, Movie>() {
-
-  private var movies = Movie()
+class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
 
   override fun getViewModelClass() = Movie::class.java
 
@@ -39,32 +38,36 @@ class MoviesFragment : BaseFragment<MainFragmentBinding, Movie>() {
 
     }
 
-    movies.callWebService()
+    if (viewModel.list.value.isNullOrEmpty()) {
+      viewModel.callWebService()
 
-    movies.visibility.observe(this, Observer {
+    }
+
+    EventBus.getDefault().post(viewModel)
+
+
+
+
+    viewModel.visibility.observe(this, Observer {
       moviesPB.visibility = it
-      moviesRV.adapter?.notifyItemRangeInserted(0, movies.movieList.size)
+      moviesRV.adapter?.notifyItemRangeInserted(0, 1)
     })
-
 
     moviesRV.apply {
       layoutManager = LinearLayoutManager(activity)
 
 
-      adapter = MovieListAdapter(movies)
+      adapter = MovieListAdapter(viewModel)
 
     }
 
   }
 
 
-
-  companion object {
-    fun newInstance() = MoviesFragment()
-  }
-
   override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
     inflater?.inflate(R.menu.main_fragment_menu, menu)
     super.onCreateOptionsMenu(menu, inflater)
   }
+
 }
+

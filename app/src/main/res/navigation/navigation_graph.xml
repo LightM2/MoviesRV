@@ -13,6 +13,6 @@
   </fragment>
   <fragment android:id="@+id/mainFragment"
       tools:layout="@layout/main_fragment"
-      android:name="com.example.project.MainFragment"
+      android:name="com.example.project.FiltersFragment"
       android:label="MainFragment"/>
 </navigation>

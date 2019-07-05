@@ -11,28 +11,29 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project.databinding.MainFragmentBinding
 import kotlinx.android.synthetic.main.main_fragment.main_recycler_view
 import kotlinx.android.synthetic.main.main_fragment.main_toolbar
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
-class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
-  override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
+class FiltersFragment : BaseFragment<MainFragmentBinding, Movie>() {
+  override fun getViewModelClass() = Movie::class.java
 
   override fun getLayoutId(): Int = R.layout.main_fragment
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    retainInstance = true
-  }
-
 
   private var yearFilters = Filters()
   private var movies = Movie()
   private var genreFilters = Filters()
   private var directorFilters = Filters()
 
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    EventBus.getDefault().register(this)
+
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     main_toolbar.inflateMenu(R.menu.main_fragment_menu)
-
-
 
     if (savedInstanceState == null) {
 
@@ -40,6 +41,9 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
         yearFilters =
           Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(it[i].year.toString()) })
       })
+
+      /*yearFilters =
+        Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(movies.list.value?.get(i)?.year.toString()) })*/
 
       genreFilters =
         Filters(moviesFiltersGenres.mapIndexed { i, _ -> FilterItem(moviesFiltersGenres[i]) })
@@ -73,17 +77,17 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
 
   }
 
-  private fun filtersToast(filters: Filters): String {
-    var trueFilters = ""
-
-    filters.filtersList.forEach {
-      if (it.state) {
-        trueFilters += it.title + " "
-        Log.d("Filters", it.title)
-      }
-    }
-    return trueFilters
+  override fun onDestroy() {
+    super.onDestroy()
+    EventBus.getDefault().unregister(this)
   }
+
+  @Subscribe(threadMode = ThreadMode.MAIN)
+  fun onViewModel(movieList: Movie) {
+    movies = movieList
+    Log.d("Filters", "onViewModel FF ")
+  }
+
 
   private fun filtersToast(filters: Filters, state: String): String {
     var trueFilters = ""
@@ -105,10 +109,6 @@ class MainFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
     outState.putSerializable("Year", yearFilters)
     outState.putSerializable("Genre", genreFilters)
     outState.putSerializable("Director", directorFilters)
-  }
-
-  companion object {
-    fun newInstance() = MainFragment()
   }
 
   override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

@@ -10,6 +10,7 @@ class ToolbarBindingAdapter {
     @JvmStatic
     fun bindCurrency(view: Toolbar, clickListener: View.OnClickListener) {
       view.setNavigationOnClickListener(clickListener)
+      //view.findNavController().navigate(R.id.toFilters) //findNavController().navigate(R.id.toFilters)
     }
   }
 }
