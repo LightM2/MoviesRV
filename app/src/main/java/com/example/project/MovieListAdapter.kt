@@ -1,10 +1,12 @@
 package com.example.project
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieDirectorTV
@@ -14,7 +16,7 @@ import kotlinx.android.synthetic.main.movies_list_rv.view.movieSummaryTV
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieTitleTV
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieYearTV
 
-class MovieListAdapter(private var dataList: Movie) :
+class MovieListAdapter(private var dataList: LiveData<ArrayList<Value>>) :
   RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -23,13 +25,14 @@ class MovieListAdapter(private var dataList: Movie) :
     return ViewHolder(itemLayoutView)
   }
 
-  override fun getItemCount(): Int {
-    return dataList.size
-  }
+  override fun getItemCount() =
+    if (dataList.value.isNullOrEmpty()) {
+      0
+    } else dataList.value!!.size
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-    val data = dataList.list.value?.get(position)
+    val data = dataList.value?.get(position)
 
     if (data != null) {
       holder.bind(
@@ -40,6 +43,8 @@ class MovieListAdapter(private var dataList: Movie) :
         data.desription,
         data.image
       )
+
+      Log.d("Filters", "data ${data.title} ${data.year}")
     }
 
   }

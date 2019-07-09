@@ -6,28 +6,37 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.widget.Toast
-import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project.databinding.MainFragmentBinding
 import kotlinx.android.synthetic.main.main_fragment.main_recycler_view
 import kotlinx.android.synthetic.main.main_fragment.main_toolbar
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
-class FiltersFragment : BaseFragment<MainFragmentBinding, Movie>() {
-  override fun getViewModelClass() = Movie::class.java
+class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
+  override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
 
   override fun getLayoutId(): Int = R.layout.main_fragment
 
+  private lateinit var model: SharedViewModel
+
   private var yearFilters = Filters()
-  private var movies = Movie()
   private var genreFilters = Filters()
   private var directorFilters = Filters()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    EventBus.getDefault().register(this)
+    model = activity?.run {
+      ViewModelProviders.of(this).get(SharedViewModel::class.java)
+    } ?: throw Exception("Invalid Activity")
+
+    val yearList = model.yearsList.toList()
+    val genreList = model.genresList.toList()
+    val directorList = model.directorsList.toList()
+
+
+    yearFilters = Filters(yearList.mapIndexed { i, _ -> FilterItem(yearList[i].toString()) })
+    genreFilters = Filters(genreList.mapIndexed { i, _ -> FilterItem(genreList[i]) })
+    directorFilters = Filters(directorList.mapIndexed { i, _ -> FilterItem(directorList[i]) })
 
   }
 
@@ -35,22 +44,7 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, Movie>() {
     super.onViewCreated(view, savedInstanceState)
     main_toolbar.inflateMenu(R.menu.main_fragment_menu)
 
-    if (savedInstanceState == null) {
-
-      movies.list.observe(this, Observer {
-        yearFilters =
-          Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(it[i].year.toString()) })
-      })
-
-      /*yearFilters =
-        Filters(moviesFiltersYears.mapIndexed { i, _ -> FilterItem(movies.list.value?.get(i)?.year.toString()) })*/
-
-      genreFilters =
-        Filters(moviesFiltersGenres.mapIndexed { i, _ -> FilterItem(moviesFiltersGenres[i]) })
-      directorFilters =
-        Filters(moviesFiltersDirectors.mapIndexed { i, _ -> FilterItem(moviesFiltersDirectors[i]) })
-
-    } else {
+    if (savedInstanceState != null) {
       yearFilters = savedInstanceState.getSerializable("Year") as Filters
       genreFilters = savedInstanceState.getSerializable("Genre") as Filters
       directorFilters = savedInstanceState.getSerializable("Director") as Filters
@@ -61,7 +55,10 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, Movie>() {
       layoutManager = LinearLayoutManager(activity)
 
       adapter = FiltersAdapter(yearFilters, genreFilters, directorFilters)
+      model.updateList(yearFilters)
     }
+
+
 
     main_toolbar.setOnMenuItemClickListener {
       Log.d("Filters", "title")
@@ -76,18 +73,6 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, Movie>() {
     }
 
   }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    EventBus.getDefault().unregister(this)
-  }
-
-  @Subscribe(threadMode = ThreadMode.MAIN)
-  fun onViewModel(movieList: Movie) {
-    movies = movieList
-    Log.d("Filters", "onViewModel FF ")
-  }
-
 
   private fun filtersToast(filters: Filters, state: String): String {
     var trueFilters = ""
@@ -115,54 +100,5 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, Movie>() {
     inflater?.inflate(R.menu.main_fragment_menu, menu)
     super.onCreateOptionsMenu(menu, inflater)
   }
-
-  private val moviesFiltersYears = listOf(
-    "1954",
-    "1957",
-    "1972",
-    "1974",
-    "1975",
-    "1990",
-    "1993",
-    "1994",
-    "1997",
-    "1998",
-    "1999",
-    "2001",
-    "2002",
-    "2003",
-    "2008",
-    "2014"
-  )
-
-  private val moviesFiltersGenres = listOf(
-    "Action",
-    "Adventure",
-    "Biography",
-    "Comedy",
-    "Crime",
-    "Drama",
-    "Fantasy",
-    "History",
-    "Romance",
-    "Sci-Fi",
-    "War"
-  )
-  private val moviesFiltersDirectors = listOf(
-    "Akira Kurosawa",
-    "Christopher Nolan",
-    "David Fincher",
-    "Fernando Meirelles",
-    "Francis Ford Coppola",
-    "Frank Darabont",
-    "Martin Scrorsese",
-    "Milos Forman",
-    "Peter Jackson",
-    "Quentin Tarantino",
-    "Roberto Zemeckis",
-    "Roberto Benigni",
-    "Sidney Lumet",
-    "Steven Spielberg"
-  )
 
 }

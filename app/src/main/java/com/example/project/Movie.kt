@@ -1,27 +1,27 @@
 package com.example.project
 
-import android.util.Log
 import android.widget.ProgressBar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.TreeSet
 
 class Movie : BaseViewModel() {
 
-  private var movieList = listOf<Value>()
+  private var movieList = arrayListOf<Value>()
 
-  private var mutableList = MutableLiveData<List<Value>>()
-  val list: LiveData<List<Value>>
+  private var mutableList = MutableLiveData<ArrayList<Value>>()
+
+  var yearsList = TreeSet<Int>()
+  var directorsList = TreeSet<String>()
+  var genresList = TreeSet<String>()
+
+  val list: LiveData<ArrayList<Value>>
     get() = mutableList
 
-  val size
-    get() = movieList.size
-
-
   var visibility = MutableLiveData<Int>()
-
 
   fun callWebService() {
     visibility.value = ProgressBar.VISIBLE
@@ -33,11 +33,13 @@ class Movie : BaseViewModel() {
       override fun onResponse(call: Call<MoviesData>, response: Response<MoviesData>) {
         val body = response.body()
         if (body?.values != null) {
-          movieList.forEach {
-
-            Log.d("Filters", it.title)
-          }
           movieList = body.values
+
+          movieList.forEach {
+            yearsList.add(it.year)
+            directorsList.add(it.director)
+            genresList.addAll(it.genre)
+          }
 
           mutableList.value = movieList
         }
@@ -52,11 +54,6 @@ class Movie : BaseViewModel() {
       }
 
     })
-  }
-
-  fun onClick() {
-    Log.d("Filters", "Click ToolBar")
-    //Navigation.createNavigateOnClickListener(R.id.toFilters)
   }
 
 }

@@ -5,14 +5,15 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.project.databinding.MoviesFragmentBinding
 import kotlinx.android.synthetic.main.movies_fragment.moviesPB
 import kotlinx.android.synthetic.main.movies_fragment.moviesRV
 import kotlinx.android.synthetic.main.movies_fragment.movies_toolbar
-import org.greenrobot.eventbus.EventBus
 
 class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
 
@@ -20,9 +21,21 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
 
   override fun getLayoutId(): Int = R.layout.movies_fragment
 
+  private lateinit var sharedModel: SharedViewModel
+
+  private var filteredMovies = MutableLiveData<ArrayList<Value>>()
+
+  private val valueList = arrayListOf<Value>()
+
+  private var sharedFilters = Filters()
+
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    retainInstance = true
+    sharedModel = activity?.run {
+      ViewModelProviders.of(this).get(SharedViewModel::class.java)
+    } ?: throw Exception("Invalid Activity")
+
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,15 +51,31 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
 
     }
 
-    if (viewModel.list.value.isNullOrEmpty()) {
-      viewModel.callWebService()
+    viewModel.callWebService()
 
+
+    sharedModel.yearsList = viewModel.yearsList
+    sharedModel.genresList = viewModel.genresList
+    sharedModel.directorsList = viewModel.directorsList
+
+    if (sharedModel.checkedYearFilters.value != null) {
+      sharedFilters = sharedModel.checkedYearFilters.value!!
+
+      viewModel.list.value?.forEach { value ->
+        sharedFilters.filtersList.forEach { filterItem ->
+          if (filterItem.state) {
+            if (value.year.toString() == filterItem.title) {
+              if (!valueList.contains(value)) {
+                valueList.add(value)
+              }
+              Log.d("Filters", "True ${value.title} ${value.year}")
+            }
+          }
+        }
+      }
     }
 
-    EventBus.getDefault().post(viewModel)
-
-
-
+    Log.d("Filters", "valueList ${valueList.isNullOrEmpty()}")
 
     viewModel.visibility.observe(this, Observer {
       moviesPB.visibility = it
@@ -56,13 +85,15 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
     moviesRV.apply {
       layoutManager = LinearLayoutManager(activity)
 
+      if (filteredMovies.value.isNullOrEmpty() && !valueList.isNullOrEmpty()) {
+        filteredMovies.value = valueList
+        Log.d("Filters", "valueList ${filteredMovies.value!!.size}")
+        adapter = MovieListAdapter(filteredMovies)
+      } else adapter = MovieListAdapter(viewModel.list)
 
-      adapter = MovieListAdapter(viewModel)
 
     }
-
   }
-
 
   override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
     inflater?.inflate(R.menu.main_fragment_menu, menu)
