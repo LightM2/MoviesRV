@@ -5,13 +5,24 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 
 abstract class BaseViewModel : ViewModel(), Observable {
 
   var fragment: Fragment? = null
 
+  val viewModelScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
   @Transient
   private var mCallbacks: PropertyChangeRegistry? = null
+
+  override fun onCleared() {
+    super.onCleared()
+    viewModelScope.cancel()
+  }
 
   fun BaseObservable() {}
 

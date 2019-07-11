@@ -46,7 +46,6 @@ class MovieListAdapter(private var dataList: LiveData<ArrayList<Value>>) :
 
       Log.d("Filters", "data ${data.title} ${data.year}")
     }
-
   }
 
   class ViewHolder(itemLayoutView: View) : RecyclerView.ViewHolder(itemLayoutView) {

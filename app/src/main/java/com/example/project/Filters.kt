@@ -25,6 +25,16 @@ class Filters(val filtersList: List<FilterItem> = mutableListOf()) : FilterItem(
       }
     }
 
+  fun isNotEmpty(): Boolean {
+    var count = 0
+    filtersList.forEach {
+      if (it.state) {
+        count++
+      }
+    }
+    return count > 0
+  }
+
   private fun allFilterStateTrue() {
     filtersList.forEachIndexed { _, filterItem ->
       filterItem.state = true

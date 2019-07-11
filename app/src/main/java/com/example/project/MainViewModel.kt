@@ -6,5 +6,8 @@ class MainViewModel : BaseViewModel() {
 
   fun onClick() {
     Log.d("Filter", "click")
+
+    // Navigation.findNavController().navigate(R.id.toFilters)
+
   }
 }

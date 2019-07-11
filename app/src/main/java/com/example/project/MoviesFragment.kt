@@ -15,19 +15,19 @@ import kotlinx.android.synthetic.main.movies_fragment.moviesPB
 import kotlinx.android.synthetic.main.movies_fragment.moviesRV
 import kotlinx.android.synthetic.main.movies_fragment.movies_toolbar
 
-class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
+class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
 
-  override fun getViewModelClass() = Movie::class.java
+  override fun getViewModelClass() = MovieViewModel::class.java
 
   override fun getLayoutId(): Int = R.layout.movies_fragment
 
   private lateinit var sharedModel: SharedViewModel
 
-  private var filteredMovies = MutableLiveData<ArrayList<Value>>()
+  private var movies = MutableLiveData<ArrayList<Value>>()
 
   private val valueList = arrayListOf<Value>()
 
-  private var sharedFilters = Filters()
+  //private var sharedFilters = Filters()
 
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,31 +51,68 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
 
     }
 
-    viewModel.callWebService()
-
+    if (viewModel.list.value.isNullOrEmpty()) {
+      viewModel.launchData()
+    }
 
     sharedModel.yearsList = viewModel.yearsList
     sharedModel.genresList = viewModel.genresList
     sharedModel.directorsList = viewModel.directorsList
 
-    if (sharedModel.checkedYearFilters.value != null) {
-      sharedFilters = sharedModel.checkedYearFilters.value!!
-
-      viewModel.list.value?.forEach { value ->
-        sharedFilters.filtersList.forEach { filterItem ->
-          if (filterItem.state) {
-            if (value.year.toString() == filterItem.title) {
-              if (!valueList.contains(value)) {
-                valueList.add(value)
+    sharedModel.checkedYearFilters.observe(this, Observer { filters ->
+      if (filters != null) {
+        viewModel.list.value?.forEach { value ->
+          filters.filtersList.forEach { filterItem ->
+            if (filterItem.state) {
+              if (value.year.toString() == filterItem.title) {
+                if (!valueList.contains(value)) {
+                  valueList.add(value)
+                }
+                Log.d("Filters", "True ${value.title} ${value.year}")
               }
-              Log.d("Filters", "True ${value.title} ${value.year}")
             }
           }
         }
       }
-    }
+    })
 
-    Log.d("Filters", "valueList ${valueList.isNullOrEmpty()}")
+    sharedModel.checkedDirectorFilters.observe(this, Observer { filters ->
+      if (filters != null) {
+        viewModel.list.value?.forEach { value ->
+          filters.filtersList.forEach { filterItem ->
+            if (filterItem.state) {
+              if (value.director == filterItem.title) {
+                if (!valueList.contains(value)) {
+                  valueList.add(value)
+                }
+                Log.d("Filters", "True ${value.title} ${value.director}")
+              }
+            }
+          }
+        }
+      }
+    })
+
+    sharedModel.checkedGenreFilters.observe(this, Observer { filters ->
+      if (filters != null) {
+        viewModel.list.value?.forEach { value ->
+          filters.filtersList.forEach { filterItem ->
+            if (filterItem.state) {
+              value.genre.forEach { genre ->
+                if (genre == filterItem.title) {
+                  if (!valueList.contains(value)) {
+                    valueList.add(value)
+                  }
+                  Log.d("Filters", "True ${value.title} $genre")
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+
+    Log.d("Filters", "valueList isNullOrEmpty ${valueList.isNullOrEmpty()}")
 
     viewModel.visibility.observe(this, Observer {
       moviesPB.visibility = it
@@ -85,12 +122,16 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, Movie>() {
     moviesRV.apply {
       layoutManager = LinearLayoutManager(activity)
 
-      if (filteredMovies.value.isNullOrEmpty() && !valueList.isNullOrEmpty()) {
-        filteredMovies.value = valueList
-        Log.d("Filters", "valueList ${filteredMovies.value!!.size}")
-        adapter = MovieListAdapter(filteredMovies)
-      } else adapter = MovieListAdapter(viewModel.list)
+      if (sharedModel.isNotEmpty()) {
+        movies.value?.clear()
+        movies.value = valueList
+        Log.d("Filters", "movies.value!!.size ${movies.value!!.size}")
+        adapter = MovieListAdapter(movies)
+      } else {
+        adapter = MovieListAdapter(viewModel.list)
+      }
 
+      //adapter = MovieListAdapter(movies)
 
     }
   }

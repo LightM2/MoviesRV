@@ -29,20 +29,26 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
       ViewModelProviders.of(this).get(SharedViewModel::class.java)
     } ?: throw Exception("Invalid Activity")
 
-    val yearList = model.yearsList.toList()
-    val genreList = model.genresList.toList()
-    val directorList = model.directorsList.toList()
+    yearFilters = if (model.checkedYearFilters.value != null) {
+      model.checkedYearFilters.value!!
+    } else {
+      val yearList = model.yearsList.toList()
+      Filters(yearList.mapIndexed { i, _ -> FilterItem(yearList[i].toString()) })
+    }
 
+    genreFilters = if (model.checkedGenreFilters.value != null) {
+      model.checkedGenreFilters.value!!
+    } else {
+      val genreList = model.genresList.toList()
+      Filters(genreList.mapIndexed { i, _ -> FilterItem(genreList[i]) })
+    }
 
-    yearFilters = Filters(yearList.mapIndexed { i, _ -> FilterItem(yearList[i].toString()) })
-    genreFilters = Filters(genreList.mapIndexed { i, _ -> FilterItem(genreList[i]) })
-    directorFilters = Filters(directorList.mapIndexed { i, _ -> FilterItem(directorList[i]) })
-
-  }
-
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
-    main_toolbar.inflateMenu(R.menu.main_fragment_menu)
+    directorFilters = if (model.checkedDirectorFilters.value != null) {
+      model.checkedDirectorFilters.value!!
+    } else {
+      val directorList = model.directorsList.toList()
+      Filters(directorList.mapIndexed { i, _ -> FilterItem(directorList[i]) })
+    }
 
     if (savedInstanceState != null) {
       yearFilters = savedInstanceState.getSerializable("Year") as Filters
@@ -51,14 +57,20 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
 
     }
 
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+
+
+    main_toolbar.inflateMenu(R.menu.main_fragment_menu)
+
     main_recycler_view.apply {
       layoutManager = LinearLayoutManager(activity)
 
       adapter = FiltersAdapter(yearFilters, genreFilters, directorFilters)
-      model.updateList(yearFilters)
+      model.updateList(yearFilters, genreFilters, directorFilters)
     }
-
-
 
     main_toolbar.setOnMenuItemClickListener {
       Log.d("Filters", "title")

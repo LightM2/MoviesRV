@@ -9,10 +9,12 @@
       tools:layout="@layout/movies_fragment"
       android:label="MoviesFragment">
     <action android:id="@+id/toFilters"
-        app:destination="@id/mainFragment"/>
+        app:destination="@id/mainFragment" app:popUpTo="@+id/moviesFragment"
+        app:popUpToInclusive="false"/>
   </fragment>
   <fragment android:id="@+id/mainFragment"
       tools:layout="@layout/main_fragment"
       android:name="com.example.project.FiltersFragment"
-      android:label="MainFragment"/>
+      android:label="MainFragment">
+  </fragment>
 </navigation>
