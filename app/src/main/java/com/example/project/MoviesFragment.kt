@@ -27,8 +27,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
 
   private val valueList = arrayListOf<Value>()
 
-  //private var sharedFilters = Filters()
-
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -46,7 +44,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
     movies_toolbar.setOnMenuItemClickListener {
       Log.d("Filters", "Click")
       view.findNavController().navigate(R.id.toFilters)
-
       true
 
     }
@@ -59,58 +56,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
     sharedModel.genresList = viewModel.genresList
     sharedModel.directorsList = viewModel.directorsList
 
-    sharedModel.checkedYearFilters.observe(this, Observer { filters ->
-      if (filters != null) {
-        viewModel.list.value?.forEach { value ->
-          filters.filtersList.forEach { filterItem ->
-            if (filterItem.state) {
-              if (value.year.toString() == filterItem.title) {
-                if (!valueList.contains(value)) {
-                  valueList.add(value)
-                }
-                Log.d("Filters", "True ${value.title} ${value.year}")
-              }
-            }
-          }
-        }
-      }
-    })
-
-    sharedModel.checkedDirectorFilters.observe(this, Observer { filters ->
-      if (filters != null) {
-        viewModel.list.value?.forEach { value ->
-          filters.filtersList.forEach { filterItem ->
-            if (filterItem.state) {
-              if (value.director == filterItem.title) {
-                if (!valueList.contains(value)) {
-                  valueList.add(value)
-                }
-                Log.d("Filters", "True ${value.title} ${value.director}")
-              }
-            }
-          }
-        }
-      }
-    })
-
-    sharedModel.checkedGenreFilters.observe(this, Observer { filters ->
-      if (filters != null) {
-        viewModel.list.value?.forEach { value ->
-          filters.filtersList.forEach { filterItem ->
-            if (filterItem.state) {
-              value.genre.forEach { genre ->
-                if (genre == filterItem.title) {
-                  if (!valueList.contains(value)) {
-                    valueList.add(value)
-                  }
-                  Log.d("Filters", "True ${value.title} $genre")
-                }
-              }
-            }
-          }
-        }
-      }
-    })
+    filteredMovie(sharedModel.checkedYearFilters, FiltersType.YEAR)
+    filteredMovie(sharedModel.checkedDirectorFilters, FiltersType.DIRECTOR)
+    filteredMovie(sharedModel.checkedGenreFilters, FiltersType.GENRE)
 
     Log.d("Filters", "valueList isNullOrEmpty ${valueList.isNullOrEmpty()}")
 
@@ -131,7 +79,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
         adapter = MovieListAdapter(viewModel.list)
       }
 
-      //adapter = MovieListAdapter(movies)
 
     }
   }
@@ -140,6 +87,56 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
     inflater?.inflate(R.menu.main_fragment_menu, menu)
     super.onCreateOptionsMenu(menu, inflater)
   }
+
+  private fun filteredMovie(mutableLiveData: MutableLiveData<Filters>, filtersType: FiltersType) {
+    mutableLiveData.observe(this, Observer { filters ->
+      if (filters != null) {
+        viewModel.list.value?.forEach { value ->
+          filters.filtersList.forEach { filterItem ->
+            if (filterItem.state) {
+              when (filtersType) {
+                FiltersType.YEAR -> sort(
+                  listOf(value.year.toString()),
+                  value,
+                  filterItem
+                )//sortYears(value, filterItem)
+                FiltersType.GENRE -> sort(
+                  value.genre,
+                  value,
+                  filterItem
+                )//sortGenre(value, filterItem)
+                FiltersType.DIRECTOR -> sort(
+                  listOf(value.director),
+                  value,
+                  filterItem
+                )//sortDirector(value, filterItem)
+              }
+            }
+          }
+        }
+      }
+    })
+  }
+
+  private fun sort(list: List<String>, value: Value, filterItem: FilterItem) {
+    list.forEach { listItem ->
+      if (listItem == filterItem.title) {
+        if (!valueList.contains(value)) {
+          valueList.add(value)
+        }
+        Log.d("Filters", "True ${value.title} $listItem")
+
+      }
+    }
+  }
+
+  enum class FiltersType {
+    YEAR,
+    GENRE,
+    DIRECTOR
+  }
+
+
 
 }
 

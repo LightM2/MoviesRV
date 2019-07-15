@@ -21,15 +21,10 @@ class SharedViewModel : ViewModel() {
   }
 
   fun isNotEmpty(): Boolean {
-    return when {
-      checkedYearFilters.value == null -> false
-      checkedDirectorFilters.value == null -> false
-      checkedGenreFilters.value == null -> false
-      checkedYearFilters.value!!.isNotEmpty() -> true
-      checkedDirectorFilters.value!!.isNotEmpty() -> true
-      checkedGenreFilters.value!!.isNotEmpty() -> true
-      else -> false
-    }
+
+    return checkedYearFilters.value?.isNotEmpty() ?: false ||
+        checkedDirectorFilters.value?.isNotEmpty() ?: false ||
+        checkedGenreFilters.value?.isNotEmpty() ?: false
   }
 
 }

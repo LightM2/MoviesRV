@@ -32,7 +32,6 @@ class MovieViewModel : BaseViewModel() {
       val service =
         RetrofitClientInstance.retrofitInstance?.create(GetMoviesService::class.java)
 
-
       try {
         val movies = withContext(IO) {
           service?.getAllMovies()?.values

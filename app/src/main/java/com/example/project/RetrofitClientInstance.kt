@@ -8,15 +8,15 @@ object RetrofitClientInstance {
   private var retrofit: Retrofit? = null
   private const val BASE_URL = "http://demo0216585.mockable.io/"
 
-  val retrofitInstance: Retrofit?
-    get() {
-      if (retrofit == null) {
-        retrofit = retrofit2.Retrofit.Builder()
-          .baseUrl(BASE_URL)
-          .addConverterFactory(GsonConverterFactory.create())
-          .build()
-      }
-      return retrofit
+  val retrofitInstance: Retrofit? by lazy {
+    if (retrofit == null) {
+      retrofit = retrofit2.Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
     }
+    return@lazy retrofit
+  }
+
 
 }
