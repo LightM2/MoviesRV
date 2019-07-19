@@ -21,7 +21,7 @@ class Filters(val filtersList: List<FilterItem> = mutableListOf()) : FilterItem(
           allFilterStateTrue()
         }
         Log.d("state", "$title $value")
-        notifyPropertyChanged(BR.state)
+        //notifyPropertyChanged(BR.state)
       }
     }
 

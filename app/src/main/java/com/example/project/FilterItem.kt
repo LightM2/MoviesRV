@@ -3,10 +3,11 @@ package com.example.project
 import android.util.Log
 import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
+import dev.auxility.baseadapter.item.Item
 import java.io.Serializable
 
-open class FilterItem(val title: String) : BaseObservable(), Serializable {
-
+open class FilterItem(val title: String) : BaseObservable(), Serializable, Item {
+  override fun getLayoutId(): Int = R.layout.filters_list_rv
   lateinit var filter: Filters
 
   @get:Bindable open var state = false
@@ -20,7 +21,7 @@ open class FilterItem(val title: String) : BaseObservable(), Serializable {
           checkedStates(filter)
         }
 
-        notifyPropertyChanged(BR.state)
+        //notifyPropertyChanged(BR.state)
 
       }
     }

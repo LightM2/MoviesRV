@@ -13,7 +13,7 @@
         app:popUpToInclusive="false"/>
   </fragment>
   <fragment android:id="@+id/mainFragment"
-      tools:layout="@layout/main_fragment"
+      tools:layout="@layout/filters_fragment"
       android:name="com.example.project.FiltersFragment"
       android:label="MainFragment">
   </fragment>

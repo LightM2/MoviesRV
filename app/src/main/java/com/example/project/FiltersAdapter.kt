@@ -29,7 +29,12 @@ class FiltersAdapter(
       }
       else -> {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = DataBindingUtil.inflate<ViewDataBinding>(inflater,R.layout.list_view, parent, false)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+          inflater,
+          R.layout.filters_list_rv,
+          parent,
+          false
+        )
 
         return ViewHolder(binding)
       }

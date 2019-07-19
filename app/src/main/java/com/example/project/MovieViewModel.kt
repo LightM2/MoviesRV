@@ -2,59 +2,74 @@ package com.example.project
 
 import android.util.Log
 import android.widget.ProgressBar
+import android.widget.Toast
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.Dispatchers.IO
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import dev.auxility.baseadapter.Adapter
+import dev.auxility.baseadapter.BaseAdapter
+import dev.auxility.baseadapter.item.Item
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.TreeSet
 
-class MovieViewModel : BaseViewModel() {
+class MovieViewModel : BaseViewModel(), SwipeRefreshLayout.OnRefreshListener {
+  override val adapter: Adapter<Item> =
+    BaseAdapter(
+      listOf(
 
-  private var movieList = arrayListOf<Value>()
+      )
+    )
+  private var mutableList = MutableLiveData<List<Movie>>()
 
-  private var mutableList = MutableLiveData<ArrayList<Value>>()
-
-  var yearsList = TreeSet<Int>()
+  var yearsList = TreeSet<String>()
   var directorsList = TreeSet<String>()
   var genresList = TreeSet<String>()
 
-  val list: LiveData<ArrayList<Value>>
+  val fragmentLiveData: MutableLiveData<(MoviesFragment) -> Unit> = MutableLiveData()
+
+  private fun fragment(block: (MoviesFragment) -> Unit) {
+    fragmentLiveData.postValue(block)
+  }
+
+  val list: LiveData<List<Movie>>
     get() = mutableList
 
   var visibility = MutableLiveData<Int>()
 
-  fun launchData() {
+  fun launchData(usedSaveData: Boolean = true) {
     visibility.value = ProgressBar.VISIBLE
 
     viewModelScope.launch {
 
-      val service =
-        RetrofitClientInstance.retrofitInstance?.create(GetMoviesService::class.java)
+      val movies = CustomApplication.movieRepository.allMovies(usedSaveData)
 
-      try {
-        val movies = withContext(IO) {
-          service?.getAllMovies()?.values
-        }
-        if (movies != null) {
-          mutableList.value = movies
+      Log.d("mytag", movies.joinToString(", ") { movie -> movie.toString() })
 
-          movies.forEach {
-            yearsList.add(it.year)
-            directorsList.add(it.director)
-            genresList.addAll(it.genre)
+      mutableList.value = movies
 
-            visibility.value = ProgressBar.INVISIBLE
-          }
-        } else {
-          Log.d("Filters", "Exception")
-        }
-
-      } catch (e: Throwable) {
-        Log.d("Filters", "Exception $e")
+      movies.forEach {
+        yearsList.add(it.year.toString())
+        directorsList.add(it.director)
+        genresList.addAll(it.genre)
+        visibility.value = ProgressBar.INVISIBLE
       }
     }
-
-    //mutableList.value = movieList
   }
+
+  var progress = ObservableBoolean(false)
+
+  override fun onRefresh() {
+
+    Log.d("mytag", "onRefresh")
+    progress.set(true)
+
+    fragment { fragment ->
+      Toast.makeText(fragment.context, "Refresh", Toast.LENGTH_SHORT).show()
+    }
+
+    progress.set(false)
+
+  }
+
 }

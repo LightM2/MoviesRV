@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
   <data>
-    <variable name="viewModel" type="com.example.project.MainViewModel"/>
+
+    <variable
+        name="viewModel"
+        type="com.example.project.FiltersViewModel" />
   </data>
 
-  <LinearLayout android:layout_width="match_parent"
-      android:orientation="vertical"
-      android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout android:layout_width="match_parent"
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
       <androidx.appcompat.widget.Toolbar
-          android:layout_width="match_parent"
-          android:theme="@style/ToolBarTheme"
-          android:layout_height="?attr/actionBarSize"
           android:id="@+id/main_toolbar"
-          app:navigationIcon="@drawable/ic_arrow_back_green_24dp"
           navigationListener="@{() -> viewModel.onClick()}"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          android:theme="@style/ToolBarTheme"
+          app:navigationIcon="@drawable/ic_arrow_back_green_24dp"
           app:title="@string/toolBarTitle">
 
       </androidx.appcompat.widget.Toolbar>
@@ -30,8 +37,11 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_recycler_view"
         android:layout_width="match_parent"
+        adapter="@{viewModel.adapter}"
         android:layout_marginLeft="5dp"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/filters_list_rv">
 
     </androidx.recyclerview.widget.RecyclerView>
 

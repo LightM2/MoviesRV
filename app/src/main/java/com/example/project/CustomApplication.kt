@@ -1,20 +1,25 @@
 package com.example.project
 
 import android.app.Application
+import androidx.room.Room
+import retrofit2.converter.gson.GsonConverterFactory
 
 class CustomApplication : Application() {
-  lateinit var movieDao: MovieDao
-  lateinit var getMoviesService: GetMoviesService
+  private val url = "http://demo0216585.mockable.io/"
   override fun onCreate() {
     super.onCreate()
-    movieDao = MovieDatabase.getDatabase(this).movieDao()
-    getMoviesService =
-      RetrofitClientInstance.retrofitInstance?.create(GetMoviesService::class.java)!!
+    val movieDao = Room.databaseBuilder(this, MovieDatabase::class.java, "db").build().movieDao()
 
-  }
+    val getMoviesService = retrofit2
+      .Retrofit
+      .Builder()
+      .baseUrl(url)
+      .addConverterFactory(GsonConverterFactory.create())
+      .build()
+      .create(GetMoviesService::class.java)
 
-  init {
     movieRepository = MovieRepository(movieDao, getMoviesService)
+
   }
 
   companion object Repository {

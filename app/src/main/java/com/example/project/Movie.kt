@@ -1,23 +1,18 @@
 package com.example.project
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-data class Value(
+@Entity(tableName = "movie")
+data class Movie(
+  @PrimaryKey(autoGenerate = true)
+  var id: Int = 0,
   @SerializedName("desription")
   val desription: String,
-
-  @SerializedName("director")
   val director: String,
-
-  @SerializedName("genre")
   val genre: List<String>,
-
-  @SerializedName("image")
   val image: String,
-
-  @SerializedName("title")
   val title: String,
-
-  @SerializedName("year")
   val year: Int
 )

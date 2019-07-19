@@ -8,11 +8,11 @@ import androidx.room.Query
 interface MovieDao {
 
   @Insert
-  fun insert(note: MovieEntity)
+  suspend fun insert(movies: List<Movie>)
 
-  @Query("DELETE FROM movie_entity")
-  fun deleteAllMovies()
+  @Query("DELETE FROM movie")
+  suspend fun deleteAllMovies()
 
-  @Query("SELECT * FROM movie_entity ")
-  suspend fun getAllMovies(): List<MovieEntity>
+  @Query("SELECT * FROM movie ")
+  suspend fun getAllMovies(): List<Movie>
 }

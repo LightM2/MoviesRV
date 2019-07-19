@@ -5,23 +5,18 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
-import android.widget.Toast
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.project.databinding.MainFragmentBinding
-import kotlinx.android.synthetic.main.main_fragment.main_recycler_view
-import kotlinx.android.synthetic.main.main_fragment.main_toolbar
+import com.example.project.databinding.FiltersFragmentBinding
+import kotlinx.android.synthetic.main.filters_fragment.main_toolbar
 
-class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
-  override fun getViewModelClass(): Class<MainViewModel> = MainViewModel::class.java
+class FiltersFragment : BaseFragment<FiltersFragmentBinding, FiltersViewModel>() {
+  override fun getViewModelClass(): Class<FiltersViewModel> = FiltersViewModel::class.java
 
-  override fun getLayoutId(): Int = R.layout.main_fragment
+  override fun getLayoutId(): Int = R.layout.filters_fragment
 
   private lateinit var model: SharedViewModel
 
-  private var yearFilters = Filters()
-  private var genreFilters = Filters()
-  private var directorFilters = Filters()
+  private var filters = mapOf<String, List<Filter>>()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -29,7 +24,12 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
       ViewModelProviders.of(this).get(SharedViewModel::class.java)
     } ?: throw Exception("Invalid Activity")
 
-    yearFilters = if (model.checkedYearFilters.value != null) {
+
+    filters = model.filters.mapValues { it.value.mapIndexed { _, title -> Filter(title, false) } }
+
+    viewModel.filters = filters
+
+    /*yearFilters = if (model.checkedYearFilters.value != null) {
       model.checkedYearFilters.value!!
     } else {
       val yearList = model.yearsList.toList()
@@ -55,7 +55,7 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
       genreFilters = savedInstanceState.getSerializable("Genre") as Filters
       directorFilters = savedInstanceState.getSerializable("Director") as Filters
 
-    }
+    }*/
 
   }
 
@@ -65,7 +65,7 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
 
     main_toolbar.inflateMenu(R.menu.main_fragment_menu)
 
-    main_recycler_view.apply {
+    /*main_recycler_view.apply {
       layoutManager = LinearLayoutManager(activity)
 
       adapter = FiltersAdapter(yearFilters, genreFilters, directorFilters)
@@ -82,7 +82,7 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
 
       true
 
-    }
+    }*/
 
   }
 
@@ -103,9 +103,9 @@ class FiltersFragment : BaseFragment<MainFragmentBinding, MainViewModel>() {
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
-    outState.putSerializable("Year", yearFilters)
+    /*outState.putSerializable("Year", yearFilters)
     outState.putSerializable("Genre", genreFilters)
-    outState.putSerializable("Director", directorFilters)
+    outState.putSerializable("Director", directorFilters)*/
   }
 
   override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

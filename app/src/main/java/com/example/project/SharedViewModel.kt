@@ -9,6 +9,8 @@ class SharedViewModel : ViewModel() {
   val checkedDirectorFilters = MutableLiveData<Filters>()
   val checkedYearFilters = MutableLiveData<Filters>()
 
+  var filters = mapOf<String, List<String>>()
+
   var yearsList = TreeSet<Int>()
   var directorsList = TreeSet<String>()
   var genresList = TreeSet<String>()
@@ -20,8 +22,21 @@ class SharedViewModel : ViewModel() {
 
   }
 
-  fun isNotEmpty(): Boolean {
+  fun deleteAllFilters() {
+    val yearList = yearsList.toList()
+    checkedYearFilters.value =
+      Filters(yearList.mapIndexed { i, _ -> FilterItem(yearList[i].toString()) })
 
+    val genreList = genresList.toList()
+    checkedGenreFilters.value = Filters(genreList.mapIndexed { i, _ -> FilterItem(genreList[i]) })
+
+    val directorList = directorsList.toList()
+    checkedDirectorFilters.value =
+      Filters(directorList.mapIndexed { i, _ -> FilterItem(directorList[i]) })
+
+  }
+
+  fun isNotEmpty(): Boolean {
     return checkedYearFilters.value?.isNotEmpty() ?: false ||
         checkedDirectorFilters.value?.isNotEmpty() ?: false ||
         checkedGenreFilters.value?.isNotEmpty() ?: false

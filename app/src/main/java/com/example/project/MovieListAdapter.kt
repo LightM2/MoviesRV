@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.movies_list_rv.view.movieSummaryTV
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieTitleTV
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieYearTV
 
-class MovieListAdapter(private var dataList: LiveData<ArrayList<Value>>) :
+class MovieListAdapter(private var dataList: LiveData<List<Movie>>) :
   RecyclerView.Adapter<MovieListAdapter.ViewHolder>() {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

@@ -5,12 +5,16 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import dev.auxility.baseadapter.Adapter
+import dev.auxility.baseadapter.item.Item
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
 abstract class BaseViewModel : ViewModel(), Observable {
+
+  abstract val adapter: Adapter<Item>
 
   var fragment: Fragment? = null
 

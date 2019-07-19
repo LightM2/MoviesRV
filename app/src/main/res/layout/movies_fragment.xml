@@ -2,6 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+  <data>
+
+    <variable
+        name="viewModel"
+        type="com.example.project.MovieViewModel" />
+  </data>
+
   <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
       android:layout_height="match_parent">
 
@@ -22,21 +29,30 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/moviesRV"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refreshMoviesSRL"
+        isRefreshed="@{viewModel.progress}"
+        onRefreshListener="@{viewModel}"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/appbar"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appbar">
 
-    </androidx.recyclerview.widget.RecyclerView>
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/moviesRV"
+          android:layout_width="0dp"
+          android:layout_height="0dp">
+
+      </androidx.recyclerview.widget.RecyclerView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 
     <ProgressBar android:layout_width="wrap_content"
         android:id="@+id/moviesPB"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@+id/moviesRV"
+        app:layout_constraintTop_toTopOf="@+id/refreshMoviesSRL"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

@@ -3,8 +3,9 @@
 
   <data>
     <variable name="item"
-        type="com.example.project.FilterItem"/>
+        type="com.example.project.FiltersItem" />
   </data>
+
 
   <LinearLayout
       android:orientation="horizontal"
@@ -13,7 +14,7 @@
 
     <androidx.appcompat.widget.AppCompatCheckBox android:layout_width="wrap_content"
         android:id="@+id/checkBoxRV"
-        android:checked="@={item.state}"
+        android:checked="@{item.state}"
         android:layout_height="wrap_content"/>
 
     <androidx.appcompat.widget.AppCompatTextView android:layout_width="match_parent"

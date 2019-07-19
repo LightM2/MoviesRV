@@ -23,9 +23,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
 
   private lateinit var sharedModel: SharedViewModel
 
-  private var movies = MutableLiveData<ArrayList<Value>>()
+  private var movies = MutableLiveData<List<Movie>>()
 
-  private val valueList = arrayListOf<Value>()
+  private val valueList = mutableListOf<Movie>()
 
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +33,16 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
     sharedModel = activity?.run {
       ViewModelProviders.of(this).get(SharedViewModel::class.java)
     } ?: throw Exception("Invalid Activity")
+
+    viewModel.fragmentLiveData.observe(this, Observer { function ->
+      function(this)
+      sharedModel.deleteAllFilters()
+      movies.value = null
+      viewModel.launchData(false)
+      moviesRV.adapter?.notifyDataSetChanged()
+      Log.d("Filters", "Refresh")
+
+    })
 
   }
 
@@ -52,9 +62,21 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
       viewModel.launchData()
     }
 
-    sharedModel.yearsList = viewModel.yearsList
-    sharedModel.genresList = viewModel.genresList
-    sharedModel.directorsList = viewModel.directorsList
+    viewModel.list.observe(this, Observer {
+      if (!sharedModel.isNotEmpty()) {
+        movies.value = viewModel.list.value
+      }
+
+    })
+
+    sharedModel.filters = mapOf(
+      "directors" to viewModel.directorsList.toList(),
+      "genres" to viewModel.genresList.toList(),
+      "years" to viewModel.yearsList.toList()
+    )
+
+
+    valueList.removeAll(valueList)
 
     filteredMovie(sharedModel.checkedYearFilters, FiltersType.YEAR)
     filteredMovie(sharedModel.checkedDirectorFilters, FiltersType.DIRECTOR)
@@ -71,13 +93,13 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
       layoutManager = LinearLayoutManager(activity)
 
       if (sharedModel.isNotEmpty()) {
-        movies.value?.clear()
+        movies.value = null
         movies.value = valueList
-        Log.d("Filters", "movies.value!!.size ${movies.value!!.size}")
-        adapter = MovieListAdapter(movies)
-      } else {
-        adapter = MovieListAdapter(viewModel.list)
+        Log.d("Filters", "movies.movie!!.size ${movies.value!!.size}")
+
       }
+
+      adapter = MovieListAdapter(movies)
 
 
     }
@@ -99,17 +121,17 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
                   listOf(value.year.toString()),
                   value,
                   filterItem
-                )//sortYears(value, filterItem)
+                )
                 FiltersType.GENRE -> sort(
                   value.genre,
                   value,
                   filterItem
-                )//sortGenre(value, filterItem)
+                )
                 FiltersType.DIRECTOR -> sort(
                   listOf(value.director),
                   value,
                   filterItem
-                )//sortDirector(value, filterItem)
+                )
               }
             }
           }
@@ -118,13 +140,13 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
     })
   }
 
-  private fun sort(list: List<String>, value: Value, filterItem: FilterItem) {
+  private fun sort(list: List<String>, movie: Movie, filterItem: FilterItem) {
     list.forEach { listItem ->
       if (listItem == filterItem.title) {
-        if (!valueList.contains(value)) {
-          valueList.add(value)
+        if (!valueList.contains(movie)) {
+          valueList.add(movie)
         }
-        Log.d("Filters", "True ${value.title} $listItem")
+        Log.d("Filters", "True ${movie.title} $listItem")
 
       }
     }
