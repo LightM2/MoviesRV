@@ -1,8 +1,14 @@
-package com.example.project
+package com.example.project.dagger
 
 import android.util.Log
+import com.example.project.GetMoviesService
+import com.example.project.Movie
+import com.example.project.MovieDao
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class MovieRepository(
+@Singleton
+class MovieRepository @Inject constructor(
   private var movieDao: MovieDao,
   private var getMoviesService: GetMoviesService
 ) {

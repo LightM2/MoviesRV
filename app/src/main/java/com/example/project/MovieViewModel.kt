@@ -38,13 +38,20 @@ class MovieViewModel : BaseViewModel(), SwipeRefreshLayout.OnRefreshListener {
   var visibility = MutableLiveData<Int>()
 
   fun launchData(usedSaveData: Boolean = true) {
+    //this.context?.let { DaggerAppComponent.builder().context(it).build().inject(it) }
+    //DaggerAppComponent.builder().context()
+
+    //CustomApplication.appComponent.inject(this)
+
     visibility.value = ProgressBar.VISIBLE
 
     viewModelScope.launch {
 
+      CustomApplication.appComponent.inject(this@MovieViewModel)
+
       val movies = CustomApplication.movieRepository.allMovies(usedSaveData)
 
-      Log.d("mytag", movies.joinToString(", ") { movie -> movie.toString() })
+      Log.d("myTag", movies.joinToString(", ") { movie -> movie.toString() })
 
       mutableList.value = movies
 

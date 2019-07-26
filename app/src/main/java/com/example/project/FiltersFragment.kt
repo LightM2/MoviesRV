@@ -24,7 +24,6 @@ class FiltersFragment : BaseFragment<FiltersFragmentBinding, FiltersViewModel>()
       ViewModelProviders.of(this).get(SharedViewModel::class.java)
     } ?: throw Exception("Invalid Activity")
 
-
     filters = model.filters.mapValues { it.value.mapIndexed { _, title -> Filter(title, false) } }
 
     viewModel.filters = filters

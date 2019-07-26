@@ -28,6 +28,7 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
   private val valueList = mutableListOf<Movie>()
 
 
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     sharedModel = activity?.run {
@@ -43,6 +44,9 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
       Log.d("Filters", "Refresh")
 
     })
+
+    //this.context?.let { DaggerAppComponent.builder().context(it).build().inject(it) }
+
 
   }
 
@@ -101,7 +105,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
 
       adapter = MovieListAdapter(movies)
 
-
     }
   }
 
@@ -157,8 +160,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
     GENRE,
     DIRECTOR
   }
-
-
 
 }
 
