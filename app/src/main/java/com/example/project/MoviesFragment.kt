@@ -10,6 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.daggermodule.Movie
+import com.example.project.dagger.MovieViewModel
 import com.example.project.databinding.MoviesFragmentBinding
 import kotlinx.android.synthetic.main.movies_fragment.moviesPB
 import kotlinx.android.synthetic.main.movies_fragment.moviesRV
@@ -26,8 +28,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
   private var movies = MutableLiveData<List<Movie>>()
 
   private val valueList = mutableListOf<Movie>()
-
-
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -46,7 +46,6 @@ class MoviesFragment : BaseFragment<MoviesFragmentBinding, MovieViewModel>() {
     })
 
     //this.context?.let { DaggerAppComponent.builder().context(it).build().inject(it) }
-
 
   }
 

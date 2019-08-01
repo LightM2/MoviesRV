@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.example.daggermodule.Movie
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieDirectorTV
 import kotlinx.android.synthetic.main.movies_list_rv.view.movieGenreTV

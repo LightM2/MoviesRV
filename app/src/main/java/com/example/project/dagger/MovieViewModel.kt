@@ -1,5 +1,6 @@
-package com.example.project
+package com.example.project.dagger
 
+import android.content.Context
 import android.util.Log
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -7,19 +8,40 @@ import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.daggermodule.GetMoviesService
+import com.example.daggermodule.Movie
+import com.example.daggermodule.MovieDao
+import com.example.daggermodule.MovieRepository
+import com.example.project.BaseViewModel
+import com.example.project.MoviesFragment
 import dev.auxility.baseadapter.Adapter
 import dev.auxility.baseadapter.BaseAdapter
 import dev.auxility.baseadapter.item.Item
 import kotlinx.coroutines.launch
 import java.util.TreeSet
+import javax.inject.Inject
+import javax.inject.Named
 
 class MovieViewModel : BaseViewModel(), SwipeRefreshLayout.OnRefreshListener {
+
+  //@Inject lateinit var movieRepository: MovieRepository
+
+  @field:[Inject Named("GetMoviesService")]
+  lateinit var getMoviesService: GetMoviesService
+
+  @field:[Inject Named("MovieDao")]
+  lateinit var movieDao: MovieDao
+
+  @Inject
+  lateinit var context: Context
+
   override val adapter: Adapter<Item> =
     BaseAdapter(
       listOf(
 
       )
     )
+
   private var mutableList = MutableLiveData<List<Movie>>()
 
   var yearsList = TreeSet<String>()
@@ -27,6 +49,10 @@ class MovieViewModel : BaseViewModel(), SwipeRefreshLayout.OnRefreshListener {
   var genresList = TreeSet<String>()
 
   val fragmentLiveData: MutableLiveData<(MoviesFragment) -> Unit> = MutableLiveData()
+
+  init {
+    CustomApplication.appComponent.inject(this)
+  }
 
   private fun fragment(block: (MoviesFragment) -> Unit) {
     fragmentLiveData.postValue(block)
@@ -38,18 +64,14 @@ class MovieViewModel : BaseViewModel(), SwipeRefreshLayout.OnRefreshListener {
   var visibility = MutableLiveData<Int>()
 
   fun launchData(usedSaveData: Boolean = true) {
-    //this.context?.let { DaggerAppComponent.builder().context(it).build().inject(it) }
-    //DaggerAppComponent.builder().context()
-
-    //CustomApplication.appComponent.inject(this)
 
     visibility.value = ProgressBar.VISIBLE
 
     viewModelScope.launch {
 
-      CustomApplication.appComponent.inject(this@MovieViewModel)
+      val movieRepository = MovieRepository(movieDao, getMoviesService)
 
-      val movies = CustomApplication.movieRepository.allMovies(usedSaveData)
+      val movies = movieRepository.allMovies(usedSaveData)
 
       Log.d("myTag", movies.joinToString(", ") { movie -> movie.toString() })
 
@@ -61,6 +83,7 @@ class MovieViewModel : BaseViewModel(), SwipeRefreshLayout.OnRefreshListener {
         genresList.addAll(it.genre)
         visibility.value = ProgressBar.INVISIBLE
       }
+
     }
   }
 

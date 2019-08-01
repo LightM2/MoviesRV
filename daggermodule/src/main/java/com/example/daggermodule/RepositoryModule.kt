@@ -1,15 +1,14 @@
-package com.example.project.dagger
+package com.example.daggermodule
 
 import android.util.Log
-import com.example.project.GetMoviesService
-import com.example.project.MovieDao
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 @Module
-internal class AppModule {
+internal class RepositoryModule {
 
-  @CustomScope
+  @Singleton
   @Provides
   fun provideRepository(movieDao: MovieDao, getMoviesService: GetMoviesService): MovieRepository {
     Log.d("Dagger", "provideRepository")

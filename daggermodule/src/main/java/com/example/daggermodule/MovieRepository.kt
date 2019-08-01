@@ -1,9 +1,6 @@
-package com.example.project.dagger
+package com.example.daggermodule
 
 import android.util.Log
-import com.example.project.GetMoviesService
-import com.example.project.Movie
-import com.example.project.MovieDao
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,7 +23,7 @@ class MovieRepository @Inject constructor(
   }
 
   private suspend fun getMoviesFromNetwork(): List<Movie> {
-    Log.d("mytag", "Retrofit")
+    Log.d("Dagger", "getMoviesFromNetwork")
     val movies = getMoviesService.getAllMovies().movies
     movieDao.deleteAllMovies()
     movieDao.insert(movies)

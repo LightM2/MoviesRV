@@ -1,4 +1,4 @@
-package com.example.project
+package com.example.daggermodule
 
 import retrofit2.http.GET
 

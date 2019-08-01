@@ -1,11 +1,11 @@
-package com.example.project.dagger
+package com.example.daggermodule
 
 import android.util.Log
-import com.example.project.GetMoviesService
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -14,19 +14,23 @@ class NetworkModule {
 
   @Singleton
   @Provides
-  internal fun provideRetrofitInterface(): Retrofit =
-    retrofit2
+  @Named("Retrofit")
+  fun provideRetrofitInterface(): Retrofit {
+    return retrofit2
       .Retrofit
       .Builder()
       .baseUrl(url)
       .addConverterFactory(GsonConverterFactory.create())
       .build()
+  }
 
   @Singleton
   @Provides
-  internal fun provideGetMoviesService(retrofit: Retrofit): GetMoviesService {
+  @Named("GetMoviesService")
+  fun provideGetMoviesService(): GetMoviesService {
     Log.d("Dagger", "provideGetMoviesService")
-    return retrofit.create(GetMoviesService::class.java)
+    return provideRetrofitInterface().create(GetMoviesService::class.java)
   }
+
 
 }

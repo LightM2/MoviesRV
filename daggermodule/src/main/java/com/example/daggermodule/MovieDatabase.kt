@@ -1,4 +1,4 @@
-package com.example.project
+package com.example.daggermodule
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -8,6 +8,6 @@ import androidx.room.TypeConverters
 @TypeConverters(Converters::class)
 abstract class MovieDatabase : RoomDatabase() {
 
-  abstract fun movieDao(): MovieDao
+  abstract fun movieDao(): com.example.daggermodule.MovieDao
 
 }
